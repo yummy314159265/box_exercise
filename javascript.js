@@ -1,7 +1,6 @@
 const box = document.getElementById("box");
 let randomDegree = 0;
 const colors = ["Orange", "Red", "Blue", "Green", "Yellow", "Purple", "Magenta", "Brown", "Violet"];
-const modDegree = () => randomDegree%360;
 const randomizer = (range=1) => Math.floor(range * Math.random());
 
 //Randomly grows/shrinks box or resets box size if too big/small
@@ -19,7 +18,7 @@ document.getElementById("button1").onclick = () =>  {
 
 //Randomly changes color of box
 document.getElementById("button2").onclick = () => {    
-    //randomly chooses a color from array
+    //chooses a color from array
     let randomColor = colors[randomizer(colors.length)];    
     //prevents same color from being chosen
     while (randomColor.toLowerCase() == box.style.backgroundColor.toLowerCase()) {
@@ -42,7 +41,7 @@ document.getElementById("button4").onclick = () => {
     //set random change in degrees and adds it to global variable, needed to keep box rotating clockwise
     randomDegree += randomizer(180);
     box.style.transform = `rotate(${randomDegree}deg)`;
-    document.getElementById("rotation").innerHTML = `Rotation: ${modDegree()}°`;
+    document.getElementById("rotation").innerHTML = `Rotation: ${randomDegree%360}°`;
 }
 
 //Randomizes every element
@@ -50,15 +49,16 @@ document.getElementById("button5").onclick = () => {
     for (let i = 1; i < 5; i++) {document.getElementById(`button${i}`).onclick()}
 }
 
+//Resets box to initial values
 document.getElementById("button6").onclick = () => {
-    randomDegree -= modDegree(); 
+    const resetDegree = () => randomDegree -= randomDegree%360;
     box.style = `
         height:150px; 
         width:150px; 
         background-color:Orange; 
         margin:100px 25px 110px 100px; 
         transition:all 1.25s; 
-        transform:rotate(${randomDegree}deg)
+        transform:rotate(${resetDegree()}deg)
     `;
     document.getElementById("size").innerHTML = "Size: 150px x 150px";
     document.getElementById("color").innerHTML = "Color: Orange";
