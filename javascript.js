@@ -3,7 +3,7 @@ const box = document.getElementById("box").style;
 let [sizeText, colorText, opacityText, rotationText] = [document.getElementById("size"), document.getElementById("color"), document.getElementById("opacity"), document.getElementById("rotation")];
 
 //initial values for reset
-const [initHeight, initWidth, initColor, initOpaciSty] = [box.height, box.width, box.backgroundColor, box.opacity];
+const [initHeight, initWidth, initColor, initOpacity] = [box.height, box.width, box.backgroundColor, box.opacity];
 const [initsizeText, initColorText, initOpacityText, initRotationText] = [sizeText.innerHTML, colorText.innerHTML, opacityText.innerHTML, rotationText.innerHTML];
 
 //variable and function needed for rotation
@@ -20,7 +20,7 @@ const randomizer = (range=1, initial=0) => Math.floor(range * Math.random()) + i
 document.getElementById("button1").onclick = () =>  {
     let randomSize = randomizer(475, 25);
     box.height = box.width = randomSize + "px";
-    sizeText.innerHTML = `Size: ${randomSize}px x ${randomSize}px`;
+    sizeText.innerHTML = `Size: ${box.height} x ${box.width}`;
 }
 
 //Randomly changes color of box
