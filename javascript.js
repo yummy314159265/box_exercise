@@ -1,13 +1,15 @@
-//make style declarations more readable
-const [box, sizeText, colorText, opacityText, rotationText] = [
+/*------------make style declarations readable-----------*/
+const [box, sizeText, colorText, opacityText, rotationText, growButton, fadeButton] = [
     document.getElementById("box").style,
     document.getElementById("size"),
     document.getElementById("color"),
     document.getElementById("opacity"),
-    document.getElementById("rotation")
+    document.getElementById("rotation"),
+    document.getElementById("button1"),
+    document.getElementById("button3")
 ];
 
-//initial values for reset
+/*----------------initial box values--------------------*/
 const [initHeight, initWidth, initColor, initOpacity, initRotation] = [
     box.height,
     box.width,
@@ -16,99 +18,260 @@ const [initHeight, initWidth, initColor, initOpacity, initRotation] = [
     parseInt(box.transform.match(/\-?(\d+\.?\d*|\d*\.?\d+)/))
 ];
 
-//initial text
-const [initSizeText, initColorText, initOpacityText, initRotationText] = [
-    `Size: ${initHeight} x ${initWidth}`,
-    `Color: ${initColor[0].toUpperCase() + initColor.substring(1)}`,
-    `Opacity: ${initOpacity * 100}%`,
-    `Rotation: ${initRotation % 90}&deg`
-];
+/*-----------variables for grow/shrink button----------*/
+let hitMaxSize = false;
+let hitMinSize = true;
+let maxSize = 550;
+let minSize = 50;
+let currentHeight = parseInt(initHeight);
+let currentWidth = parseInt(initWidth);
+let sideRatio = currentWidth/currentHeight;
 
-function initText() {
-    [sizeText.innerHTML, colorText.innerHTML, opacityText.innerHTML, rotationText.innerHTML] = [
-        initSizeText,
-        initColorText,
-        initOpacityText,
-        initRotationText
-    ];
+//if initial height or initial width is greater than maxSize
+if (parseInt(initHeight) >= maxSize || parseInt(initWidth) >= maxSize) {
+    hitMaxSize = true;
+    hitMinSize = false;
+    maxSize = Math.max(parseInt(initHeight), parseInt(initWidth));
+    growButton.innerHTML = "Shrink";
+} 
+
+//if initial height or width is less than minSize
+if (parseInt(initHeight) < minSize || parseInt(initWidth) < minSize) {
+    minSize = Math.min(parseInt(initHeight), parseInt(initWidth));
 }
 
-initText();
+const growthRate = Math.round((maxSize-minSize)/20)
 
-//variables and function needed for rotation
-let randomDegree = initRotation;
-let resetPosition = initRotation % 360;
-function resetDegree() {
-    randomDegree -= (randomDegree - initRotation)%90;
-    resetPosition = randomDegree % 360;
-    return randomDegree;
-}
-
-//color array
+/*--------------variables for color button-------------*/
+let currentColor = box.backgroundColor;
 const colors = [
-    "Orange",
-    "Red",
-    "Blue",
-    "Green",
-    "Yellow",
-    "Purple",
-    "Magenta",
-    "Brown",
-    "Violet"
+    "red",
+    "blue",
+    "green",
+    "yellow",
+    "purple",
+    "magenta",
+    "brown",
+    "violet"
 ];
+//adds initial color to array if box starts with a color not in array
+if (!colors.includes(initColor)){
+    colors.unshift(initColor);
+}
+
+/*--------variables for fade/materialize button--------*/
+let currentOpacity = parseInt(initOpacity);
+let hitMaxOpacity = true;
+let hitMinOpacity = false;
+let maxOpacity = 1;
+let minOpacity = .2;
+
+//if initial opacity is less than minOpacity
+if (parseInt(initOpacity) <= minOpacity) {
+    hitMaxOpacity = false;
+    hitMinOpacity = true;
+    minOpacity = parseInt(initOpacity);
+    fadeButton.innerHTML = "Materialize";
+}
+
+//if initial opacity is more than maxOpacity
+if(parseInt(initOpacity) > maxOpacity) {
+    maxOpacity = parseInt(initOpacity);
+}
+
+const fadeRate = Math.round((maxOpacity-minOpacity)*100)/1000
+
+/*-------------variables for spin button---------------*/
+let currentDegree = initRotation;
+let resetPosition = initRotation % 360;
+const spinRate = 179;
+
+//n value refers to rotational symmetry (see https://en.wikipedia.org/wiki/Rotational_symmetry), 1 will work for any shape
+let n = 1;
+
+//squares have 4 points of rotational symmetry, rectangles have 2
+if (sideRatio == 1) {
+    n = 4;
+} else {
+    n = 2;
+}
+
+/*--------------initial text for reset----------------*/
+const [initSizeText, initColorText, initOpacityText, initRotationText, initGrowButton, initFadeButton] = [
+    `Size: ${initHeight} x ${initWidth}`,
+    `Color: ${initColor}`,
+    `Opacity: ${initOpacity * 100}%`,
+    `Rotation: ${initRotation % (360/n)}&deg`,
+    growButton.innerHTML,
+    fadeButton.innerHTML
+];
+
+
+/*--------------------functions-----------------------*/
+
+//limits size of box to maxSize and minSize
+const addToCurrentHeight = (rate) => {
+
+    if (!hitMaxSize) {
+        currentHeight += rate;
+        if (currentHeight >= maxSize) {
+            currentHeight += rate;
+            hitMaxSize = true;
+            hitMinSize = false;
+            growButton.innerHTML = "Shrink";
+        }
+    }
+
+    if (!hitMinSize) {
+        currentHeight -= rate;
+        if (currentHeight <= minSize) {
+            currentHeight = minSize;
+            hitMinSize = true;
+            hitMaxSize = false;
+            growButton.innerHTML = "Grow";
+        }
+    }
+}
+
+
+//limits opacity to maxOpacity and minOpacity
+const addToCurrentOpacity = (rate) => {
+
+    if (!hitMaxOpacity) {
+        currentOpacity = Math.round((currentOpacity+rate)*100)/100;
+        if(currentOpacity >= maxOpacity) {
+            currentOpacity += rate;
+            hitMaxOpacity = true;
+            hitMinOpacity = false;
+            fadeButton.innerHTML = "Fade";
+        }
+    }
+
+    if (!hitMinOpacity) {
+        currentOpacity = Math.round((currentOpacity-rate)*100)/100;
+        if(currentOpacity <= minOpacity) {
+            currentOpacity = minOpacity;
+            hitMinOpacity = true;
+            hitMaxOpacity = false;
+            fadeButton.innerHTML = "Materialize";
+        }
+    }
+}
+
+//display readable text for opacity
+const opacityTextNum = () => Math.round(currentOpacity*100);
+
+
+//resets rotation to closest point of rotational symmetry
+function resetDegree() {
+    currentDegree -= (currentDegree - initRotation) % (360/n);
+    resetPosition = currentDegree % 360;
+    return currentDegree;
+}
+
+//display correct text for rotation
+const rotationTextNum = () => (initRotation%(360/n) + currentDegree - resetPosition)%360
+
 
 //make random integers 
-function randomizer(range = 1, min = 0) {
-    return Math.floor(range * Math.random()) + min;
-}
+const randomizer = (range = 1, min = 0) => Math.round(range * Math.random()) + min;
 
-//randomly grows/shrinks box to some size between 25x25px and 500x500px
+
+//write the text under buttons
+function writeText(thisSizeText, thisColorText, thisOpacityText, thisRotationText) {
+    [sizeText.innerHTML, colorText.innerHTML, opacityText.innerHTML, rotationText.innerHTML] = [
+        thisSizeText,
+        thisColorText,
+        thisOpacityText,
+        thisRotationText
+    ];
+};
+
+/*-------------------on click events-------------------*/
+
+//grow/shrink button
 document.getElementById("button1").onclick = () => {
-    const randomSize = randomizer(475, 25);
-    box.height = box.width = randomSize + "px";
+
+    addToCurrentHeight(growthRate);
+    
+    box.height = currentHeight + "px";
+    box.width = (Math.round(currentHeight * sideRatio)) + "px";
     sizeText.innerHTML = `Size: ${box.height} x ${box.width}`;
 }
 
-//randomly changes color of box
+
+//color button
 document.getElementById("button2").onclick = () => {
 
-    //chooses a color from array
-    let randomColor = colors[randomizer(colors.length)];
-
-    //prevents same color from being chosen
-    while (randomColor.toLowerCase() == box.backgroundColor.toLowerCase()) {
-        randomColor = colors[randomizer(colors.length)];
+    if (colors.indexOf(box.backgroundColor) < (colors.length-1)) {
+        currentColor = colors[colors.indexOf(box.backgroundColor)+1];
+    } else {
+        currentColor = colors[0];
     }
 
-    box.backgroundColor = randomColor;
-    colorText.innerHTML = `Color: ${randomColor}`;
+    box.backgroundColor = currentColor;
+    colorText.innerHTML = `Color: ${currentColor}`;
 }
 
-//randomly changes opacity of box
+
+//fade/materialize button
 document.getElementById("button3").onclick = () => {
-    const randomOpacity = randomizer(100);
-    box.opacity = randomOpacity / 100;
-    opacityText.innerHTML = `Opacity: ${randomOpacity}%`;
+    
+    addToCurrentOpacity(fadeRate);
+
+    box.opacity = currentOpacity;
+    opacityText.innerHTML = `Opacity: ${opacityTextNum()}%`
 }
 
-//randomly rotates box clockwise
+
+//spin button
 document.getElementById("button4").onclick = () => {
-    //set random change in degrees and adds it to global variable, needed to keep box rotating clockwise
-    randomDegree += randomNum = randomizer(180);
-    box.transform = `rotate(${randomDegree}deg)`;
-    rotationText.innerHTML = `Rotation: ${initRotation%90 + ((randomDegree - resetPosition)%360)}&deg`;
+    
+    currentDegree += spinRate;
+    
+    box.transform = `rotate(${currentDegree}deg)`;
+    rotationText.innerHTML = `Rotation: ${rotationTextNum()}&deg`;
 }
 
-//randomizes every element
+
+//randomize all button
 document.getElementById("button5").onclick = () => {
-    for (let i = 1; i < 5; i++) {
-        document.getElementById(`button${i}`).onclick();
+
+    //randomizes box size
+    currentHeight = randomizer((maxSize - minSize), minSize);
+    currentWidth = Math.round(currentHeight * sideRatio);
+
+    //randomizes color
+    currentColor = colors[randomizer(colors.length)];
+    //prevents same color from being chosen
+    while (currentColor == box.backgroundColor) {
+        currentColor = colors[randomizer(colors.length)];
     }
+    
+    //randomizes opacity
+    currentOpacity = randomizer((maxOpacity - minOpacity)*100, minOpacity*100)/100;
+    
+    //randomizes rotation
+    currentDegree += randomizer(180);
+
+    //set box css
+    [box.height, box.width, box.backgroundColor, box.opacity, box.transform] = [
+        currentHeight + "px",
+        currentWidth + "px",
+        currentColor,
+        currentOpacity,
+        `rotate(${currentDegree}deg)`
+    ]
+
+    //writes text under buttons
+    writeText(`Size: ${box.height} x ${box.width}`, `Color: ${box.backgroundColor}`, `Opacity: ${opacityTextNum()}%`, `Rotation: ${rotationTextNum()}&deg`);
 }
 
-//resets box to initial values
+
+//reset button
 document.getElementById("button6").onclick = () => {
 
+    //reset height, width, color, opacity
     [box.height, box.width, box.backgroundColor, box.opacity] = [
         initHeight,
         initWidth,
@@ -116,8 +279,28 @@ document.getElementById("button6").onclick = () => {
         initOpacity
     ];
 
-    //resets rotation to the closest rotationally symmetrical position to initial
+    //reset rotation
     box.transform = `rotate(${resetDegree()}deg)`;
 
-    initText();
+    //reset grow/shrink button, fade/materialize button
+    [growButton.innerHTML, fadeButton.innerHTML] = [
+        initGrowButton,
+        initFadeButton
+    ];
+
+    //reset variables for height, width, color, opacity
+    [currentHeight, currentWidth, currentColor, currentOpacity] = [
+        parseInt(initHeight),
+        parseInt(initWidth),
+        initColor,
+        parseInt(initOpacity)
+    ];
+
+    //resets text under buttons
+    writeText(initSizeText, initColorText, initOpacityText, initRotationText);
 }
+
+/*--------------initial function calls--------------*/
+
+//write inital text under buttons
+writeText(initSizeText, initColorText, initOpacityText, initRotationText);
