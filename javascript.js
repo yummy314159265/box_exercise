@@ -14,8 +14,8 @@ const [initHeight, initWidth, initColor, initOpacity, initRotation] = [
     box.height,
     box.width,
     box.backgroundColor,
-    box.opacity,
-    parseInt(box.transform.match(/\-?(\d+\.?\d*|\d*\.?\d+)/))
+    box.opacity || 1,
+    parseInt(box.transform.match(/\-?(\d+\.?\d*|\d*\.?\d+)/)) || 0
 ];
 
 /*-----------variables for grow/shrink button----------*/
@@ -64,7 +64,7 @@ let currentOpacity = parseInt(initOpacity);
 let hitMaxOpacity = true;
 let hitMinOpacity = false;
 let maxOpacity = 1;
-let minOpacity = .2;
+let minOpacity = 0;
 
 //if initial opacity is less than minOpacity
 if (parseInt(initOpacity) <= minOpacity) {
@@ -115,7 +115,7 @@ const addToCurrentHeight = (rate) => {
     if (!hitMaxSize) {
         currentHeight += rate;
         if (currentHeight >= maxSize) {
-            currentHeight += rate;
+            currentHeight = maxSize + rate;
             hitMaxSize = true;
             hitMinSize = false;
             growButton.innerHTML = "Shrink";
@@ -140,7 +140,7 @@ const addToCurrentOpacity = (rate) => {
     if (!hitMaxOpacity) {
         currentOpacity = Math.round((currentOpacity+rate)*100)/100;
         if(currentOpacity >= maxOpacity) {
-            currentOpacity += rate;
+            currentOpacity = maxOpacity + rate;
             hitMaxOpacity = true;
             hitMinOpacity = false;
             fadeButton.innerHTML = "Fade";
