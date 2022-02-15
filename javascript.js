@@ -144,14 +144,13 @@ const addToCurrentSize = (rate, bigSide = Math.max(currentHeight, currentWidth),
     return [bigSide, littleSide]
 }
 
-
 //adds fadeRate to opacity then limits opacity to maxOpacity and minOpacity
-const addToCurrentOpacity = (rate, opacity) => {
+const addToCurrentOpacity = (rate, opacity = currentOpacity) => {
 
     if (!hitMaxOpacity) {
-        opacity = Math.round((currentOpacity+rate)*100)/100;
-        if(currentOpacity >= maxOpacity) {
-            currentOpacity = maxOpacity + rate;
+        opacity = Math.round((opacity + rate)*100)/100;
+        if(opacity >= maxOpacity) {
+            opacity = maxOpacity + rate;
             hitMaxOpacity = true;
             hitMinOpacity = false;
             fadeButton.innerHTML = "Fade";
@@ -159,21 +158,20 @@ const addToCurrentOpacity = (rate, opacity) => {
     }
 
     if (!hitMinOpacity) {
-        opacity = Math.round((currentOpacity-rate)*100)/100;
-        if(currentOpacity <= minOpacity) {
-            currentOpacity = minOpacity;
+        opacity = Math.round((opacity - rate)*100)/100;
+        if(opacity <= minOpacity) {
+            opacity = minOpacity;
             hitMinOpacity = true;
             hitMaxOpacity = false;
             fadeButton.innerHTML = "Materialize";
         }
     }
 
-    return opacity
+    return opacity;
 }
 
 //display readable text for opacity
 const opacityTextNum = () => Math.round(currentOpacity*100);
-
 
 //resets rotation to closest point of rotational symmetry
 const resetDegree = () => {
@@ -185,10 +183,8 @@ const resetDegree = () => {
 //display correct text for rotation
 const rotationTextNum = () => (initRotation%(360/n) + currentDegree - resetPosition)%360
 
-
 //make random integers 
 const randomizer = (range = 1, min = 0) => Math.round(range * Math.random()) + min;
-
 
 //write the text under buttons
 const writeText = (thisSizeText, thisColorText, thisOpacityText, thisRotationText) => {
