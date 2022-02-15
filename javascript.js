@@ -21,33 +21,30 @@ const [initHeight, initWidth, initColor, initOpacity, initRotation] = [
 /*-----------variables for grow/shrink button----------*/
 let hitMaxSize = false;
 let hitMinSize = true;
-let maxSize = 350;
-let minSize = 50;
 let currentHeight = parseInt(initHeight);
 let currentWidth = parseInt(initWidth);
-let sideRatio = currentWidth/currentHeight;
-const growthRate = 2;
+let currentSize = [Math.max(currentHeight, currentWidth), Math.min(currentHeight, currentWidth)]
+let maxSize = Math.max(350, ...currentSize);
+let minSize = Math.min(50, ...currentSize);
+let sideRatio = currentSize[0]/currentSize[1];
+const growthRate = 2;   
 
-//if initial height or initial width is greater than maxSize
-if (parseInt(initHeight) >= maxSize || parseInt(initWidth) >= maxSize) {
+//if initial height or initial width is maxSize
+if (currentSize[0] == maxSize) {
     hitMaxSize = true;
     hitMinSize = false;
-    maxSize = Math.max(parseInt(initHeight), parseInt(initWidth));
     growButton.innerHTML = "Shrink";
-} 
-
-//if initial height or width is less than minSize
-if (parseInt(initHeight) < minSize || parseInt(initWidth) < minSize) {
-    minSize = Math.min(parseInt(initHeight), parseInt(initWidth));
+} else {
+    growButton.innerHTML = "Grow";
 }
 
 //for resetting button
 const initHitMaxSize = hitMaxSize;
 const initHitMinSize = hitMinSize;
 
-
 /*--------------variables for color button-------------*/
 let currentColor = box.backgroundColor;
+
 const colors = [
     "red",
     "blue",
@@ -58,6 +55,7 @@ const colors = [
     "brown",
     "violet"
 ];
+
 //adds initial color to array if box starts with a color not in array
 if (!colors.includes(initColor)){
     colors.unshift(initColor);
@@ -67,21 +65,17 @@ if (!colors.includes(initColor)){
 let currentOpacity = parseInt(initOpacity);
 let hitMaxOpacity = true;
 let hitMinOpacity = false;
-let maxOpacity = 1;
-let minOpacity = .1;
+let maxOpacity = Math.max(1, currentOpacity);
+let minOpacity = Math.min(.1, currentOpacity);
 const fadeRate = Math.round((maxOpacity-minOpacity)*100)/1000
 
-//if initial opacity is less than minOpacity
-if (parseInt(initOpacity) <= minOpacity) {
+//if initial opacity is minOpacity
+if (currentOpacity== minOpacity) {
     hitMaxOpacity = false;
     hitMinOpacity = true;
-    minOpacity = parseInt(initOpacity);
     fadeButton.innerHTML = "Materialize";
-}
-
-//if initial opacity is more than maxOpacity
-if(parseInt(initOpacity) > maxOpacity) {
-    maxOpacity = parseInt(initOpacity);
+} else {
+    fadeButton.innerHTML = "Fade";
 }
 
 //for resetting button
@@ -117,76 +111,45 @@ const [initSizeText, initColorText, initOpacityText, initRotationText, initGrowB
 /*--------------------functions-----------------------*/
 
 //multiplies box size by growthRate then limits size of box to maxSize and minSize
-const addToCurrentHeight = (rate) => {
+const addToCurrentSize = (rate, bigSide = Math.max(currentHeight, currentWidth), littleSide = Math.min(currentHeight, currentWidth)) => {
 
-    if(currentHeight >= currentWidth){
-
-        if (!hitMaxSize) {
+    if (!hitMaxSize) {
             
-            currentHeight *= rate;
-
-            if (currentHeight >= maxSize) {
-                currentHeight = maxSize * rate;
-                hitMaxSize = true;
-                hitMinSize = false;
-                growButton.innerHTML = "Shrink";
-            }
-
-            currentWidth = Math.round(currentHeight * sideRatio);
-        }
-
-        if (!hitMinSize) {
-
-            currentWidth /= rate;
-            
-            if (currentWidth <= minSize) {
-                currentWidth = minSize;
-                hitMinSize = true;
-                hitMaxSize = false;
-                growButton.innerHTML = "Grow";
-            }
-
-            currentHeight = Math.round(currentWidth / sideRatio);
-        }
-
-    } else {
-
-        if (!hitMaxSize) {
-            
-            currentWidth *= rate;
-            
-            if (currentWidth >= maxSize) {
-                currentWidth = maxSize * rate;
-                hitMaxSize = true;
-                hitMinSize = false;
-                growButton.innerHTML = "Shrink";
-            }
+        bigSide *= rate;
         
-            currentHeight = Math.round(currentWidth / sideRatio);
+        if (bigSide >= maxSize) {
+            bigSide = maxSize * rate;
+            hitMaxSize = true;
+            hitMinSize = false;
+            growButton.innerHTML = "Shrink";
         }
 
-        if (!hitMinSize) {
-
-            currentHeight /= rate;
-
-            if (currentHeight <= minSize) {
-                currentHeight = minSize;
-                hitMinSize = true;
-                hitMaxSize = false;
-                growButton.innerHTML = "Grow";
-            }
-
-            currentWidth = Math.round(currentHeight * sideRatio);
-        }
+        littleSide = Math.round(bigSide / sideRatio);
     }
+
+    if (!hitMinSize) {
+
+        littleSide /= rate;
+            
+        if (littleSide <= minSize) {
+            littleSide = minSize;
+            hitMinSize = true;
+            hitMaxSize = false;
+            growButton.innerHTML = "Grow";            
+        }
+
+        bigSide = Math.round(littleSide * sideRatio);
+    }
+
+    return [bigSide, littleSide]
 }
 
 
 //adds fadeRate to opacity then limits opacity to maxOpacity and minOpacity
-const addToCurrentOpacity = (rate) => {
+const addToCurrentOpacity = (rate, opacity) => {
 
     if (!hitMaxOpacity) {
-        currentOpacity = Math.round((currentOpacity+rate)*100)/100;
+        opacity = Math.round((currentOpacity+rate)*100)/100;
         if(currentOpacity >= maxOpacity) {
             currentOpacity = maxOpacity + rate;
             hitMaxOpacity = true;
@@ -196,7 +159,7 @@ const addToCurrentOpacity = (rate) => {
     }
 
     if (!hitMinOpacity) {
-        currentOpacity = Math.round((currentOpacity-rate)*100)/100;
+        opacity = Math.round((currentOpacity-rate)*100)/100;
         if(currentOpacity <= minOpacity) {
             currentOpacity = minOpacity;
             hitMinOpacity = true;
@@ -204,6 +167,8 @@ const addToCurrentOpacity = (rate) => {
             fadeButton.innerHTML = "Materialize";
         }
     }
+
+    return opacity
 }
 
 //display readable text for opacity
@@ -211,7 +176,7 @@ const opacityTextNum = () => Math.round(currentOpacity*100);
 
 
 //resets rotation to closest point of rotational symmetry
-function resetDegree() {
+const resetDegree = () => {
     currentDegree -= (currentDegree - initRotation) % (360/n);
     resetPosition = currentDegree % 360;
     return currentDegree;
@@ -226,7 +191,7 @@ const randomizer = (range = 1, min = 0) => Math.round(range * Math.random()) + m
 
 
 //write the text under buttons
-function writeText(thisSizeText, thisColorText, thisOpacityText, thisRotationText) {
+const writeText = (thisSizeText, thisColorText, thisOpacityText, thisRotationText) => {
     [sizeText.innerHTML, colorText.innerHTML, opacityText.innerHTML, rotationText.innerHTML] = [
         thisSizeText,
         thisColorText,
@@ -240,8 +205,14 @@ function writeText(thisSizeText, thisColorText, thisOpacityText, thisRotationTex
 //grow/shrink button
 document.getElementById("button1").onclick = () => {
 
-    addToCurrentHeight(growthRate);
-    
+    currentSize = addToCurrentSize(growthRate);
+
+    if (currentHeight >= currentWidth) {
+        [currentHeight, currentWidth] = currentSize;
+    } else {
+        [currentWidth, currentHeight] = currentSize;
+    }
+
     box.height = Math.round(currentHeight) + "px";
     box.width = Math.round(currentWidth) + "px";
     sizeText.innerHTML = `[ Size: ${Math.round(currentHeight)} x ${Math.round(currentWidth)} pixels ]`;
@@ -265,7 +236,7 @@ document.getElementById("button2").onclick = () => {
 //fade/materialize button
 document.getElementById("button3").onclick = () => {
     
-    addToCurrentOpacity(fadeRate);
+    currentOpacity = addToCurrentOpacity(fadeRate);
 
     box.opacity = currentOpacity;
     opacityText.innerHTML = `[ Opacity: ${opacityTextNum()}% ]`
@@ -286,12 +257,13 @@ document.getElementById("button4").onclick = () => {
 document.getElementById("button5").onclick = () => {
 
     //randomizes box size
-    if(currentHeight >= currentWidth){
-        currentHeight = randomizer((maxSize - minSize), minSize);
-        currentWidth = Math.round(currentHeight * sideRatio);
+    const randomSize = randomizer(maxSize-minSize, minSize);
+    currentSize = [randomSize, randomSize/sideRatio];
+
+    if (currentHeight >= currentWidth) {
+        [currentHeight, currentWidth] = currentSize;
     } else {
-        currentWidth = randomizer((maxSize - minSize), minSize);
-        currentHeight = Math.round(currentWidth / sideRatio);
+        [currentWidth, currentHeight] = currentSize;
     }
 
     //randomizes color
