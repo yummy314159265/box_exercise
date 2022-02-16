@@ -24,7 +24,7 @@ let hitMinSize = true;
 let currentHeight = parseInt(initHeight);
 let currentWidth = parseInt(initWidth);
 let currentSize = [Math.max(currentHeight, currentWidth), Math.min(currentHeight, currentWidth)]
-let maxSize = Math.max(350, ...currentSize);
+let maxSize = Math.max(500, ...currentSize);
 let minSize = Math.min(50, ...currentSize);
 let sideRatio = currentSize[0]/currentSize[1];
 const growthRate = 2;   
@@ -61,9 +61,6 @@ if (!colors.includes(initColor)){
     colors.unshift(initColor);
 }
 
-//for text padding
-const longestColor = colors.reduce((a, b) => a.length > b.length ? a : b)
-
 /*--------variables for fade/materialize button--------*/
 let currentOpacity = parseInt(initOpacity);
 let hitMaxOpacity = true;
@@ -88,7 +85,6 @@ const initHitMinOpacity = hitMinOpacity;
 /*-------------variables for spin button---------------*/
 let currentDegree = initRotation;
 let resetPosition = initRotation % 360;
-const spinRate = 181;
 
 //n value refers to rotational symmetry (see https://en.wikipedia.org/wiki/Rotational_symmetry), 1 will work for any shape
 let n = 1;
@@ -102,7 +98,7 @@ if (sideRatio == 1) {
 
 /*--------------initial text for reset----------------*/
 const [initSizeText, initColorText, initOpacityText, initRotationText, initGrowButton, initFadeButton] = [
-    `${(currentHeight).toString().padStart(3)} x ${(currentWidth)}`,
+    `${(currentHeight)} x ${(currentWidth)}`,
     `${initColor}`,
     `${initOpacity * 100}%`,
     `${initRotation % (360/n)}&deg`,
@@ -174,7 +170,7 @@ const addToCurrentOpacity = (rate, opacity = currentOpacity) => {
 }
 
 //display readable text for opacity
-const opacityTextNum = () => Math.round(currentOpacity*100).toString().padStart(3);
+const opacityTextNum = () => Math.round(currentOpacity*100);
 
 //resets rotation to closest point of rotational symmetry
 const resetDegree = () => {
@@ -184,7 +180,7 @@ const resetDegree = () => {
 }
 
 //display correct text for rotation
-const rotationTextNum = () => ((initRotation%(360/n) + currentDegree - resetPosition)%360).toString().padStart(3)
+const rotationTextNum = () => ((initRotation%(360/n) + currentDegree - resetPosition)%360)
 
 //make random integers 
 const randomizer = (range = 1, min = 0) => Math.round(range * Math.random()) + min;
@@ -245,7 +241,7 @@ document.getElementById("button3").onclick = () => {
 //spin button
 document.getElementById("button4").onclick = () => {
     
-    currentDegree += spinRate;
+    currentDegree += randomizer(180, 180);
     
     box.transform = `rotate(${currentDegree}deg)`;
     rotationText.innerHTML = `${rotationTextNum()}&deg`;

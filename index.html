@@ -19,9 +19,14 @@
         }
 
         .container{ 
-            display:grid; 
-            grid-template-columns:1fr 1fr 1fr 1fr;
-            grid-template-rows:20px 500px 35px 55px 55px;
+            display: grid; 
+            grid-template-columns: repeat(4, 150px);
+            grid-template-rows: 20px 70% 35px repeat(2, 100px);
+            column-gap: 2px;
+            justify-content: center;
+            align-content: end;
+            height: 95vh;
+            overflow: auto;
         }
 
         button{
@@ -35,10 +40,10 @@
             color: #36395A;
             cursor: pointer;
             display: inline-flex;
-            height: 48px;
-            justify-content: center;
+            height: 95%;
             line-height: 1;
             list-style: none;
+            justify-content: center;
             overflow: hidden;
             padding-left: 16px;
             padding-right: 16px;
@@ -51,8 +56,8 @@
             touch-action: manipulation;
             white-space: nowrap;
             will-change: box-shadow,transform;
-            font-size: auto;
-            width:95%;
+            font-size: 18px;
+            width: 100%;
         }
 
         button:focus{
@@ -71,9 +76,9 @@
 
     </style>
     <div class="container">  
-        <p style="font-size:20px; grid-column-start:1; grid-column-end:5;">Press the buttons to change the box!</p>
+        <p style="font-size:30px; grid-column:1/5; fill-opacity: 1;">Press the buttons to change the box!</p>
 
-        <div id="box" style="height:150px; width:200px; background-color: Orange; margin:auto; transition:all 1.25s; grid-column-start:1; grid-column-end:5; z-index:-1;" ></div>
+        <div id="box" style="height:150px; width:200px; background-color: Orange; margin:auto; transition:all 1.25s ease-out; grid-column:1/5; z-index:-1;" ></div>
         <p class="stats" id="size"></p>
         <p class="stats" id="color"></p>
         <p class="stats" id="opacity"></p>
@@ -83,7 +88,7 @@
         <button id="button3"></button>
         <button id="button4">Spin!</button>
         <div></div>
-        <button id="button5">Randomize All</button>
+        <button id="button5">Randomize</button>
         <button id="button6">Reset</button>
     </div>
 
