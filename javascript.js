@@ -61,6 +61,7 @@ if (!colors.includes(initColor)){
     colors.unshift(initColor);
 }
 
+//for text padding
 const longestColor = colors.reduce((a, b) => a.length > b.length ? a : b)
 
 /*--------variables for fade/materialize button--------*/
@@ -101,10 +102,10 @@ if (sideRatio == 1) {
 
 /*--------------initial text for reset----------------*/
 const [initSizeText, initColorText, initOpacityText, initRotationText, initGrowButton, initFadeButton] = [
-    `[ Size: ${(box.height).padStart(5)} x ${(box.width).padStart(5)} ]`,
-    `[ Color: ${initColor.padStart(longestColor.length)} ]`,
-    `[ Opacity: ${(initOpacity * 100).toString().padStart(3)}% ]`,
-    `[ Rotation: ${(initRotation % (360/n)).toString().padStart(3)}&deg ]`,
+    `${(currentHeight).toString().padStart(3)} x ${(currentWidth)}`,
+    `${initColor}`,
+    `${initOpacity * 100}%`,
+    `${initRotation % (360/n)}&deg`,
     growButton.innerHTML,
     fadeButton.innerHTML
 ];
@@ -213,7 +214,7 @@ document.getElementById("button1").onclick = () => {
 
     box.height = Math.round(currentHeight) + "px";
     box.width = Math.round(currentWidth) + "px";
-    sizeText.innerHTML = `[ Size: ${(box.height).padStart(5)} x ${(box.width).padStart(5)} ]`;
+    sizeText.innerHTML = `${Math.round(currentHeight)} x ${Math.round(currentWidth)}`;
 }
 
 
@@ -227,7 +228,7 @@ document.getElementById("button2").onclick = () => {
     }
 
     box.backgroundColor = currentColor;
-    colorText.innerHTML = `[ Color: ${currentColor.padStart(longestColor.length)} ]`;
+    colorText.innerHTML = `${currentColor}`;
 }
 
 
@@ -237,7 +238,7 @@ document.getElementById("button3").onclick = () => {
     currentOpacity = addToCurrentOpacity(fadeRate);
 
     box.opacity = currentOpacity;
-    opacityText.innerHTML = `[ Opacity: ${opacityTextNum()}% ]`
+    opacityText.innerHTML = `${opacityTextNum()}%`
 }
 
 
@@ -247,7 +248,7 @@ document.getElementById("button4").onclick = () => {
     currentDegree += spinRate;
     
     box.transform = `rotate(${currentDegree}deg)`;
-    rotationText.innerHTML = `[ Rotation: ${rotationTextNum()}&deg ]`;
+    rotationText.innerHTML = `${rotationTextNum()}&deg`;
 }
 
 
@@ -287,7 +288,7 @@ document.getElementById("button5").onclick = () => {
     ]
 
     //writes text under buttons
-    writeText(`[ Size: ${(box.height).padStart(5)} x ${(box.width).padStart(5)} ]`, `[ Color: ${currentColor.padStart(longestColor.length)} ]`, `[ Opacity: ${opacityTextNum()}% ]`, `[ Rotation: ${rotationTextNum()}&deg ]`);
+    writeText(`${currentHeight} x ${currentWidth}`, `${currentColor}`, `${opacityTextNum()}%`, `${rotationTextNum()}&deg`);
 }
 
 
