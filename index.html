@@ -20,8 +20,8 @@
 
         .container{ 
             display:grid; 
-            grid-template-columns:155px 155px 155px 155px;
-            grid-template-rows:10px 350px 40px 60px 60px;
+            grid-template-columns:1fr 1fr 1fr 1fr;
+            grid-template-rows:20px 500px 35px 55px 55px;
         }
 
         button{
@@ -51,8 +51,8 @@
             touch-action: manipulation;
             white-space: nowrap;
             will-change: box-shadow,transform;
-            font-size: 18px;
-            width:150px;
+            font-size: auto;
+            width:95%;
         }
 
         button:focus{
@@ -71,10 +71,9 @@
 
     </style>
     <div class="container">  
-        <p style="font-size:20px; grid-column-start:1 ; grid-column-end:5;">Press the buttons to change the box!</p>
+        <p style="font-size:20px; grid-column-start:1; grid-column-end:5;">Press the buttons to change the box!</p>
 
-        <div id="box" style="height:150px; width:200px; background-color: Orange; margin:auto; margin-top:100px; margin-bottom:120px; transition:all 1.25s; grid-column-start:1; grid-column-end:5; z-index:-1;" ></div>
-    
+        <div id="box" style="height:150px; width:200px; background-color: Orange; margin:auto; transition:all 1.25s; grid-column-start:1; grid-column-end:5; z-index:-1;" ></div>
         <p class="stats" id="size"></p>
         <p class="stats" id="color"></p>
         <p class="stats" id="opacity"></p>
