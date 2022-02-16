@@ -66,8 +66,8 @@ let currentOpacity = parseInt(initOpacity);
 let hitMaxOpacity = true;
 let hitMinOpacity = false;
 let maxOpacity = Math.max(1, currentOpacity);
-let minOpacity = Math.min(.1, currentOpacity);
-const fadeRate = Math.round((maxOpacity-minOpacity)*100)/333.33333
+let minOpacity = Math.min(.01, currentOpacity);
+const fadeRate = Math.round((maxOpacity-minOpacity)*100)/333
 
 //if initial opacity is minOpacity
 if (currentOpacity== minOpacity) {
