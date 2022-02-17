@@ -6,7 +6,7 @@ const [box, sizeText, colorText, opacityText, rotationText, growButton, fadeButt
     document.getElementById("opacity"),
     document.getElementById("rotation"),
     document.getElementById("button1"),
-    document.getElementById("button3")
+    document.getElementById("button3"),
 ];
 
 /*----------------initial box values--------------------*/
@@ -15,7 +15,7 @@ const [initHeight, initWidth, initColor, initOpacity, initRotation] = [
     box.width,
     box.backgroundColor,
     box.opacity || 1,
-    parseInt(box.transform.match(/\-?(\d+\.?\d*|\d*\.?\d+)/)) || 0
+    parseInt(box.transform.match(/\-?(\d+\.?\d*|\d*\.?\d+)deg/)) || 0
 ];
 
 /*-----------variables for grow/shrink button----------*/
@@ -24,7 +24,7 @@ let hitMinSize = true;
 let currentHeight = parseInt(initHeight);
 let currentWidth = parseInt(initWidth);
 let currentSize = [Math.max(currentHeight, currentWidth), Math.min(currentHeight, currentWidth)]
-let maxSize = Math.max(500, ...currentSize);
+let maxSize = Math.max(600, ...currentSize);
 let minSize = Math.min(50, ...currentSize);
 let sideRatio = currentSize[0]/currentSize[1];
 const growthRate = 2;   
@@ -243,7 +243,7 @@ document.getElementById("button4").onclick = () => {
     
     currentDegree += randomizer(180, 180);
     
-    box.transform = `rotate(${currentDegree}deg)`;
+    box.transform = `rotate(${currentDegree}deg)` ;
     rotationText.innerHTML = `${rotationTextNum()}&deg`;
 }
 
@@ -281,7 +281,7 @@ document.getElementById("button5").onclick = () => {
         currentColor,
         currentOpacity,
         `rotate(${currentDegree}deg)`
-    ]
+    ];
 
     //writes text under buttons
     writeText(`${currentHeight} x ${currentWidth}`, `${currentColor}`, `${opacityTextNum()}%`, `${rotationTextNum()}&deg`);
