@@ -1,5 +1,5 @@
 /*------------make style declarations readable-----------*/
-const [box, sizeText, colorText, opacityText, rotationText, growButton, fadeButton] = [
+const [box, sizeText, colorText, opacityText, rotationText, growButton, fadeButton, colorButton] = [
     document.getElementById("box").style,
     document.getElementById("size"),
     document.getElementById("color"),
@@ -7,6 +7,7 @@ const [box, sizeText, colorText, opacityText, rotationText, growButton, fadeButt
     document.getElementById("rotation"),
     document.getElementById("button1"),
     document.getElementById("button3"),
+    document.getElementById("button2")
 ];
 
 /*----------------initial box values--------------------*/
@@ -43,7 +44,8 @@ const initHitMaxSize = hitMaxSize;
 const initHitMinSize = hitMinSize;
 
 /*--------------variables for color button-------------*/
-let currentColor = box.backgroundColor;
+let currentColor = initColor;
+colorText.style.color = initColor;
 
 const colors = [
     "red",
@@ -180,7 +182,7 @@ const resetDegree = () => {
 }
 
 //display correct text for rotation
-const rotationTextNum = () => ((initRotation%(360/n) + currentDegree - resetPosition)%360)
+const rotationTextNum = (degrees) => ((initRotation%(360/n) + degrees - resetPosition)%360)
 
 //make random integers 
 const randomizer = (range = 1, min = 0) => Math.round(range * Math.random()) + min;
@@ -223,7 +225,7 @@ document.getElementById("button2").onclick = () => {
         currentColor = colors[0];
     }
 
-    box.backgroundColor = currentColor;
+    box.backgroundColor = colorText.style.color = currentColor;
     colorText.innerHTML = `${currentColor}`;
 }
 
@@ -241,10 +243,41 @@ document.getElementById("button3").onclick = () => {
 //spin button
 document.getElementById("button4").onclick = () => {
     
+    let startDegree = currentDegree;
     currentDegree += randomizer(180, 180);
     
-    box.transform = `rotate(${currentDegree}deg)` ;
-    rotationText.innerHTML = `${rotationTextNum()}&deg`;
+    box.transform = `rotate(${currentDegree}deg)`;
+
+    //animate count on rotation
+    const countRange = currentDegree - startDegree;
+    const duration = 1250;
+    const stepTime = Math.floor(duration / countRange);
+    const timer = setInterval(() => {
+        startDegree += 1;
+        rotationText.innerHTML = `${rotationTextNum(startDegree)}&deg`;
+        if (startDegree == currentDegree) {
+            clearInterval(timer);
+        }
+    }, stepTime);
+
+
+    /*const animateValue = (id, start, end, duration) => {
+        if (start === end) return;
+        let current = start;
+        const range = end - start;
+        const increment = end > start? 1 : -1;
+        const stepTime = Math.abs(Math.floor(duration / range));
+        const obj = document.getElementById(id);
+        const timer = setInterval(() => {
+            current += increment;
+            obj.innerHTML = `${rotationTextNum(current)%360}&deg`;
+            if (current == end) {
+                clearInterval(timer);
+            }
+        }, stepTime);
+    }*/
+
+    
 }
 
 
@@ -284,7 +317,8 @@ document.getElementById("button5").onclick = () => {
     ];
 
     //writes text under buttons
-    writeText(`${currentHeight} x ${currentWidth}`, `${currentColor}`, `${opacityTextNum()}%`, `${rotationTextNum()}&deg`);
+    writeText(`${currentHeight} x ${currentWidth}`, `${currentColor}`, `${opacityTextNum()}%`, `${rotationTextNum(currentDegree)}&deg`);
+    colorText.style.color = currentColor;
 }
 
 
@@ -300,6 +334,7 @@ document.getElementById("button6").onclick = () => {
     ];
 
     //reset rotation
+    let start = currentDegree;
     box.transform = `rotate(${resetDegree()}deg)`;
 
     //reset grow/shrink button, fade/materialize button
@@ -321,6 +356,7 @@ document.getElementById("button6").onclick = () => {
 
     //resets text under buttons
     writeText(initSizeText, initColorText, initOpacityText, initRotationText);
+    colorText.style.color = initColor;
 }
 
 /*--------------initial function calls--------------*/
