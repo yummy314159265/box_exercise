@@ -86,6 +86,7 @@ const initHitMinOpacity = hitMinOpacity;
 
 /*-------------variables for spin button---------------*/
 let currentDegree = initRotation;
+let startDegree = currentDegree;
 let resetPosition = initRotation % 360;
 
 //n value refers to rotational symmetry (see https://en.wikipedia.org/wiki/Rotational_symmetry), 1 will work for any shape
@@ -184,6 +185,20 @@ const resetDegree = () => {
 //display correct text for rotation
 const rotationTextNum = (degrees) => ((initRotation%(360/n) + degrees - resetPosition)%360)
 
+const animateRotationText = (start, end) => {
+    let current = start;
+    const countRange = end - start;
+    const duration = 1250;
+    const stepTime = Math.floor(duration / countRange);
+    const timer = setInterval(() => {
+        current += 1;
+        rotationText.innerHTML = `${rotationTextNum(current)}&deg`;
+        if (current == end) {
+            clearInterval(timer);
+        }
+    }, stepTime);
+}
+
 //make random integers 
 const randomizer = (range = 1, min = 0) => Math.round(range * Math.random()) + min;
 
@@ -242,42 +257,12 @@ document.getElementById("button3").onclick = () => {
 
 //spin button
 document.getElementById("button4").onclick = () => {
-    
-    let startDegree = currentDegree;
+
+    startDegree = currentDegree;
     currentDegree += randomizer(180, 180);
     
-    box.transform = `rotate(${currentDegree}deg)`;
-
-    //animate count on rotation
-    const countRange = currentDegree - startDegree;
-    const duration = 1250;
-    const stepTime = Math.floor(duration / countRange);
-    const timer = setInterval(() => {
-        startDegree += 1;
-        rotationText.innerHTML = `${rotationTextNum(startDegree)}&deg`;
-        if (startDegree == currentDegree) {
-            clearInterval(timer);
-        }
-    }, stepTime);
-
-
-    /*const animateValue = (id, start, end, duration) => {
-        if (start === end) return;
-        let current = start;
-        const range = end - start;
-        const increment = end > start? 1 : -1;
-        const stepTime = Math.abs(Math.floor(duration / range));
-        const obj = document.getElementById(id);
-        const timer = setInterval(() => {
-            current += increment;
-            obj.innerHTML = `${rotationTextNum(current)%360}&deg`;
-            if (current == end) {
-                clearInterval(timer);
-            }
-        }, stepTime);
-    }*/
-
-    
+    box.transform = `rotate(${currentDegree}deg)`; 
+    animateRotationText(startDegree, currentDegree);
 }
 
 
