@@ -88,7 +88,7 @@ const initHitMinOpacity = hitMinOpacity;
 let currentDegree = initRotation;
 let startDegree = currentDegree;
 let resetPosition = initRotation % 360;
-let isActive = false;
+let timer;
 
 //n value refers to rotational symmetry (see https://en.wikipedia.org/wiki/Rotational_symmetry), 1 will work for any shape
 let n = 1;
@@ -187,25 +187,26 @@ const resetDegree = () => {
 const rotationTextNum = (degrees) => ((initRotation % (360 / n) + degrees - resetPosition) % 360)
 
 //displays increasing counter when spin button is pressed
-const activate = () => isActive = true;
-const deactivate = () => isActive = false;
-
 const animateRotationText = (start, end) => {
-    activate();
-    if (start===end) return;
+    if (start === end) return;
     let current = start;
     const countRange = end - start;
     const duration = 1250;
-    const increment = end > start? 1 : -1;
-    const stepTime = Math.abs(Math.floor(duration / countRange));
-    const timer = setInterval(() => {
-        current += increment;
+    const stepTime = Math.floor(duration / countRange);
+    timer = setInterval(() => {
+        current += 1;
         rotationText.innerHTML = `${rotationTextNum(current)}&deg`;
         if (current == end) {
             clearInterval(timer);
-            deactivate();
         }
     }, stepTime);
+}
+
+//clears timer
+const clearTimer = () => {
+    if (timer != undefined) {
+        clearInterval(timer);
+    }
 }
 
 //make random integers 
@@ -266,6 +267,8 @@ document.getElementById("button3").onclick = () => {
 
 //spin button
 document.getElementById("button4").onclick = () => {
+    
+    clearTimer();
 
     startDegree = currentDegree;
     currentDegree += randomizer(180, 180);
@@ -278,6 +281,8 @@ document.getElementById("button4").onclick = () => {
 //randomize all button
 document.getElementById("button5").onclick = () => {
 
+    clearTimer();
+    
     //randomizes box size
     const randomSize = randomizer(maxSize - minSize, minSize);
     currentSize = [randomSize, Math.round(randomSize / sideRatio)];
@@ -320,7 +325,8 @@ document.getElementById("button5").onclick = () => {
 
 //reset button
 document.getElementById("button6").onclick = () => {
-    if (isActive) return;
+    
+    clearTimer();
 
     //reset height, width, color, opacity
     [box.height, box.width, box.backgroundColor, box.opacity] = [
