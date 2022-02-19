@@ -27,8 +27,8 @@ let currentWidth = parseInt(initWidth);
 let currentSize = [Math.max(currentHeight, currentWidth), Math.min(currentHeight, currentWidth)]
 let maxSize = Math.max(900, ...currentSize);
 let minSize = Math.min(50, ...currentSize);
-let sideRatio = currentSize[0]/currentSize[1];
-const growthRate = 2;   
+let sideRatio = currentSize[0] / currentSize[1];
+const growthRate = 2;
 
 //if initial height or initial width is maxSize
 if (currentSize[0] == maxSize) {
@@ -59,7 +59,7 @@ const colors = [
 ];
 
 //adds initial color to array if box starts with a color not in array
-if (!colors.includes(initColor)){
+if (!colors.includes(initColor)) {
     colors.unshift(initColor);
 }
 
@@ -69,10 +69,10 @@ let hitMaxOpacity = true;
 let hitMinOpacity = false;
 let maxOpacity = Math.max(1, currentOpacity);
 let minOpacity = Math.min(.01, currentOpacity);
-const fadeRate = Math.round((maxOpacity-minOpacity)*100)/333
+const fadeRate = Math.round((maxOpacity - minOpacity) * 100) / 333
 
 //if initial opacity is minOpacity
-if (currentOpacity== minOpacity) {
+if (currentOpacity == minOpacity) {
     hitMaxOpacity = false;
     hitMinOpacity = true;
     fadeButton.innerHTML = "Materialize";
@@ -88,6 +88,7 @@ const initHitMinOpacity = hitMinOpacity;
 let currentDegree = initRotation;
 let startDegree = currentDegree;
 let resetPosition = initRotation % 360;
+let isActive = false;
 
 //n value refers to rotational symmetry (see https://en.wikipedia.org/wiki/Rotational_symmetry), 1 will work for any shape
 let n = 1;
@@ -101,10 +102,10 @@ if (sideRatio == 1) {
 
 /*--------------initial text for reset----------------*/
 const [initSizeText, initColorText, initOpacityText, initRotationText, initGrowButton, initFadeButton] = [
-    `${(currentHeight)} x ${(currentWidth)}`,
+    `${(currentHeight).toString().padStart(3)} x ${(currentWidth).toString().padStart(3)}`,
     `${initColor}`,
     `${initOpacity * 100}%`,
-    `${initRotation % (360/n)}&deg`,
+    `${initRotation % (360 / n)}&deg`,
     growButton.innerHTML,
     fadeButton.innerHTML
 ];
@@ -113,12 +114,12 @@ const [initSizeText, initColorText, initOpacityText, initRotationText, initGrowB
 /*--------------------functions-----------------------*/
 
 //multiplies box size by growthRate then limits size of box to maxSize and minSize
-const addToCurrentSize = (rate, bigSide = Math.max(currentHeight, currentWidth), littleSide = Math.min(currentHeight, currentWidth)) => {
+const addToCurrentSize = (rate, bigSide = currentSize[0], littleSide = currentSize[1]) => {
 
     if (!hitMaxSize) {
-            
+
         bigSide *= rate;
-        
+
         if (bigSide >= maxSize) {
             bigSide = maxSize * rate;
             hitMaxSize = true;
@@ -132,12 +133,12 @@ const addToCurrentSize = (rate, bigSide = Math.max(currentHeight, currentWidth),
     if (!hitMinSize) {
 
         littleSide /= rate;
-            
+
         if (littleSide <= minSize) {
             littleSide = minSize;
             hitMinSize = true;
             hitMaxSize = false;
-            growButton.innerHTML = "Grow";            
+            growButton.innerHTML = "Grow";
         }
 
         bigSide = Math.round(littleSide * sideRatio);
@@ -150,8 +151,8 @@ const addToCurrentSize = (rate, bigSide = Math.max(currentHeight, currentWidth),
 const addToCurrentOpacity = (rate, opacity = currentOpacity) => {
 
     if (!hitMaxOpacity) {
-        opacity = Math.round((opacity + rate)*100)/100;
-        if(opacity >= maxOpacity) {
+        opacity = Math.round((opacity + rate) * 100) / 100;
+        if (opacity >= maxOpacity) {
             opacity = maxOpacity + rate;
             hitMaxOpacity = true;
             hitMinOpacity = false;
@@ -160,8 +161,8 @@ const addToCurrentOpacity = (rate, opacity = currentOpacity) => {
     }
 
     if (!hitMinOpacity) {
-        opacity = Math.round((opacity - rate)*100)/100;
-        if(opacity <= minOpacity) {
+        opacity = Math.round((opacity - rate) * 100) / 100;
+        if (opacity <= minOpacity) {
             opacity = minOpacity;
             hitMinOpacity = true;
             hitMaxOpacity = false;
@@ -173,28 +174,36 @@ const addToCurrentOpacity = (rate, opacity = currentOpacity) => {
 }
 
 //display readable text for opacity
-const opacityTextNum = () => Math.round(currentOpacity*100);
+const opacityTextNum = () => Math.round(currentOpacity * 100);
 
 //resets rotation to closest point of rotational symmetry
 const resetDegree = () => {
-    currentDegree -= (currentDegree - initRotation) % (360/n);
+    currentDegree -= (currentDegree - initRotation) % (360 / n);
     resetPosition = currentDegree % 360;
     return currentDegree;
 }
 
 //display correct text for rotation
-const rotationTextNum = (degrees) => ((initRotation%(360/n) + degrees - resetPosition)%360)
+const rotationTextNum = (degrees) => ((initRotation % (360 / n) + degrees - resetPosition) % 360)
+
+//displays increasing counter when spin button is pressed
+const activate = () => isActive = true;
+const deactivate = () => isActive = false;
 
 const animateRotationText = (start, end) => {
+    activate();
+    if (start===end) return;
     let current = start;
     const countRange = end - start;
     const duration = 1250;
-    const stepTime = Math.floor(duration / countRange);
+    const increment = end > start? 1 : -1;
+    const stepTime = Math.abs(Math.floor(duration / countRange));
     const timer = setInterval(() => {
-        current += 1;
+        current += increment;
         rotationText.innerHTML = `${rotationTextNum(current)}&deg`;
         if (current == end) {
             clearInterval(timer);
+            deactivate();
         }
     }, stepTime);
 }
@@ -227,15 +236,15 @@ document.getElementById("button1").onclick = () => {
 
     box.height = Math.round(currentHeight) + "px";
     box.width = Math.round(currentWidth) + "px";
-    sizeText.innerHTML = `${Math.round(currentHeight)} x ${Math.round(currentWidth)}`;
+    sizeText.innerHTML = `${Math.round(currentHeight).toString().padStart(3)} x ${Math.round(currentWidth).toString().padStart(3)}`;
 }
 
 
 //color button
 document.getElementById("button2").onclick = () => {
 
-    if (colors.indexOf(box.backgroundColor) < (colors.length-1)) {
-        currentColor = colors[colors.indexOf(box.backgroundColor)+1];
+    if (colors.indexOf(box.backgroundColor) < (colors.length - 1)) {
+        currentColor = colors[colors.indexOf(box.backgroundColor) + 1];
     } else {
         currentColor = colors[0];
     }
@@ -247,7 +256,7 @@ document.getElementById("button2").onclick = () => {
 
 //fade/materialize button
 document.getElementById("button3").onclick = () => {
-    
+
     currentOpacity = addToCurrentOpacity(fadeRate);
 
     box.opacity = currentOpacity;
@@ -260,8 +269,8 @@ document.getElementById("button4").onclick = () => {
 
     startDegree = currentDegree;
     currentDegree += randomizer(180, 180);
-    
-    box.transform = `rotate(${currentDegree}deg)`; 
+
+    box.transform = `rotate(${currentDegree}deg)`;
     animateRotationText(startDegree, currentDegree);
 }
 
@@ -270,8 +279,8 @@ document.getElementById("button4").onclick = () => {
 document.getElementById("button5").onclick = () => {
 
     //randomizes box size
-    const randomSize = randomizer(maxSize-minSize, minSize);
-    currentSize = [randomSize, Math.round(randomSize/sideRatio)];
+    const randomSize = randomizer(maxSize - minSize, minSize);
+    currentSize = [randomSize, Math.round(randomSize / sideRatio)];
 
     if (currentHeight >= currentWidth) {
         [currentHeight, currentWidth] = currentSize;
@@ -280,17 +289,18 @@ document.getElementById("button5").onclick = () => {
     }
 
     //randomizes color
-    currentColor = colors[randomizer(colors.length-1)];
+    currentColor = colors[randomizer(colors.length - 1)];
     //prevents same color from being chosen
     if (currentColor == box.backgroundColor) {
-        currentColor = colors[colors.indexOf(currentColor)+1] || colors[0];
+        currentColor = colors[colors.indexOf(currentColor) + 1] || colors[0];
     }
-    
+
     //randomizes opacity
-    currentOpacity = randomizer((maxOpacity - minOpacity)*100, minOpacity*100)/100;
-    
+    currentOpacity = randomizer((maxOpacity - minOpacity) * 100, minOpacity * 100) / 100;
+
     //randomizes rotation
-    currentDegree += randomizer(180);
+    startDegree = currentDegree;
+    currentDegree += randomizer(360);
 
     //set box properties
     [box.height, box.width, box.backgroundColor, box.opacity, box.transform] = [
@@ -302,13 +312,15 @@ document.getElementById("button5").onclick = () => {
     ];
 
     //writes text under buttons
-    writeText(`${currentHeight} x ${currentWidth}`, `${currentColor}`, `${opacityTextNum()}%`, `${rotationTextNum(currentDegree)}&deg`);
+    writeText(`${currentHeight.toString().padStart(3)} x ${currentWidth.toString().padStart(3)}`, `${currentColor}`, `${opacityTextNum()}%`, `${rotationTextNum(startDegree)}&deg`);
+    animateRotationText(startDegree, currentDegree);
     colorText.style.color = currentColor;
 }
 
 
 //reset button
 document.getElementById("button6").onclick = () => {
+    if (isActive) return;
 
     //reset height, width, color, opacity
     [box.height, box.width, box.backgroundColor, box.opacity] = [
@@ -319,14 +331,13 @@ document.getElementById("button6").onclick = () => {
     ];
 
     //reset rotation
-    let start = currentDegree;
     box.transform = `rotate(${resetDegree()}deg)`;
 
     //reset grow/shrink button, fade/materialize button
     growButton.innerHTML = initGrowButton;
     hitMaxSize = initHitMaxSize;
     hitMinSize = initHitMinSize;
-    
+
     fadeButton.innerHTML = initFadeButton;
     hitMaxOpacity = initHitMaxOpacity;
     hitMinOpacity = initHitMinOpacity;
