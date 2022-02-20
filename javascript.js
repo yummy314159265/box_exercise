@@ -24,7 +24,7 @@ let hitMaxSize = false;
 let hitMinSize = true;
 let currentHeight = parseInt(initHeight);
 let currentWidth = parseInt(initWidth);
-let currentSize = [Math.max(currentHeight, currentWidth), Math.min(currentHeight, currentWidth)]
+let currentSize = [Math.max(currentHeight, currentWidth), Math.min(currentHeight, currentWidth)];
 let maxSize = Math.max(900, ...currentSize);
 let minSize = Math.min(50, ...currentSize);
 let sideRatio = currentSize[0] / currentSize[1];
@@ -69,7 +69,7 @@ let hitMaxOpacity = true;
 let hitMinOpacity = false;
 let maxOpacity = Math.max(1, currentOpacity);
 let minOpacity = Math.min(.01, currentOpacity);
-const fadeRate = Math.round((maxOpacity - minOpacity) * 100) / 333
+const fadeRate = Math.round(maxOpacity - minOpacity)/3
 
 //if initial opacity is minOpacity
 if (currentOpacity == minOpacity) {
@@ -151,7 +151,9 @@ const addToCurrentSize = (rate, bigSide = currentSize[0], littleSide = currentSi
 const addToCurrentOpacity = (rate, opacity = currentOpacity) => {
 
     if (!hitMaxOpacity) {
+
         opacity = Math.round((opacity + rate) * 100) / 100;
+        
         if (opacity >= maxOpacity) {
             opacity = maxOpacity + rate;
             hitMaxOpacity = true;
@@ -161,7 +163,9 @@ const addToCurrentOpacity = (rate, opacity = currentOpacity) => {
     }
 
     if (!hitMinOpacity) {
+        
         opacity = Math.round((opacity - rate) * 100) / 100;
+        
         if (opacity <= minOpacity) {
             opacity = minOpacity;
             hitMinOpacity = true;
@@ -186,13 +190,15 @@ const resetDegree = () => {
 //display correct text for rotation
 const rotationTextNum = (degrees) => ((initRotation % (360 / n) + degrees - resetPosition) % 360)
 
-//displays increasing counter when spin button is pressed
+//displays animated counter for rotation
 const animateRotationText = (start, end) => {
+
     if (start === end) return;
     let current = start;
     const countRange = end - start;
     const duration = 1250;
     const stepTime = Math.floor(duration / countRange);
+
     timer = setInterval(() => {
         current += 1;
         rotationText.innerHTML = `${rotationTextNum(current)}&deg`;
@@ -202,11 +208,12 @@ const animateRotationText = (start, end) => {
     }, stepTime);
 }
 
-//clears timer
+//stops rotation text from animating
 const clearTimer = () => {
     if (timer != undefined) {
         clearInterval(timer);
     }
+    return;
 }
 
 //make random integers 
@@ -355,6 +362,8 @@ document.getElementById("button6").onclick = () => {
         initColor,
         parseInt(initOpacity)
     ];
+
+    currentSize = [Math.max(currentHeight, currentWidth), Math.min(currentHeight, currentWidth)];
 
     //resets text under buttons
     writeText(initSizeText, initColorText, initOpacityText, initRotationText);
