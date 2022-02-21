@@ -23,7 +23,7 @@ const [initHeight, initWidth, initColor, initOpacity, initRotation] = [
 let growing;
 let currentHeight = initHeight;
 let currentWidth = initWidth;
-let currentSize = [Math.max(initHeight, initWidth), Math.min(initHeight, initWidth)];
+let currentSize = [Math.max(initHeight, initWidth), Math.min(initHeight, initWidth)]
 let maxSize = Math.max(900, ...currentSize);
 let minSize = Math.min(50, ...currentSize);
 let sideRatio = currentSize[0] / currentSize[1];
@@ -222,7 +222,7 @@ document.getElementById("button3").onclick = () => {
 
     if (fading) {
 
-        currentOpacity = currentOpacity - fadeRate;
+        currentOpacity -= fadeRate;
         
         if (currentOpacity <= minOpacity) {
             currentOpacity = minOpacity;
@@ -232,7 +232,7 @@ document.getElementById("button3").onclick = () => {
 
     } else {
         
-        currentOpacity = currentOpacity + fadeRate;
+        currentOpacity += fadeRate;
         
         if (currentOpacity >= maxOpacity) {
             currentOpacity = maxOpacity;
@@ -337,6 +337,10 @@ document.getElementById("button6").onclick = () => {
     //resets text under buttons
     writeText(initSizeText, initColorText, initOpacityText, initRotationText);
     colorText.style.color = initColor;
+}
+
+document.getElementById("dark-button").onclick = () => {
+    document.body.classList.toggle("dark-mode");
 }
 
 /*--------------initial function calls--------------*/
